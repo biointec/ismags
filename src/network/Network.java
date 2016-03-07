@@ -133,7 +133,8 @@ public class Network {
     }
 
     public ArrayList<Node> getNodesOfType(MotifLink m) {
-        return nodesWithLink.get(m);
+    	ArrayList<Node> nodeList = nodesWithLink.get(m);
+    	return nodeList!=null? nodeList : new ArrayList<Node>();
     }
     
     /**
