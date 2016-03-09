@@ -209,7 +209,7 @@ public class NodeIterator {
                 its[i] = initialLists.get(i).listIterator();
             }
             if (!its[0].hasNext()) {
-                return null;
+                return new ArrayList<Node>();
             }
             Node ni = its[0].next();
             int j = 1;

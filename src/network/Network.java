@@ -66,7 +66,13 @@ public class Network {
         return nodesByDescription.get(s);
     }
 
-    /**
+    
+    
+    public Map<String, Node> getNodesByDescription() {
+		return nodesByDescription;
+	}
+
+	/**
      * Adds a link to the network and updates the sets of nodes with edges of
      * the related type
      *
@@ -133,7 +139,8 @@ public class Network {
     }
 
     public ArrayList<Node> getNodesOfType(MotifLink m) {
-        return nodesWithLink.get(m);
+    	ArrayList<Node> nodeList = nodesWithLink.get(m);
+    	return nodeList!=null? nodeList : new ArrayList<Node>();
     }
     
     /**
