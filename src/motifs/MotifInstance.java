@@ -33,7 +33,15 @@ public class MotifInstance {
         nodeMapping = Arrays.copyOf(mapping, mapping.length);
     }
 
-    @Override
+    /**
+     * Get the array of nodes in this motif instance
+     * @return array of nodes in this motif instance
+     */
+    public Node[] getNodeArray() {
+		return nodeMapping;
+	}
+
+	@Override
     public String toString() {
         String r = "";
         for (int i = 0; i < nodeMapping.length; i++) {

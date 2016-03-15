@@ -61,7 +61,11 @@ public class Node implements Comparable<Node> {
         return ID - o.ID;
     }
     
-//    public int getID(){
-//    	return ID;
-//    }
+    /**
+     * Get the numerical SUID of this node 
+     * @return SUID of this node 
+     */
+    public int getID(){
+    	return ID;
+    }
 }
