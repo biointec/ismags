@@ -91,4 +91,8 @@ public class LinkType {
     public static int getNrLinkTypes(){
         return linkTypes.size();
     }
+    
+    public static void clear(){
+    	linkTypes = new HashMap<Integer, LinkType>();
+    }
 }
