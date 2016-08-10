@@ -11,8 +11,15 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
         <configuration>
-          <source/>
-          <target/>
+			<source>1.8</source>
+			<target>1.8</target>
+			<optimize>true</optimize>
+			<showWarnings>true</showWarnings>
+			<showDeprecation>true</showDeprecation>
+			<compilerArguments>
+				<Xmaxwarns>10000</Xmaxwarns>
+				<Xmaxerrs>10000</Xmaxerrs>
+			</compilerArguments>
         </configuration>
       </plugin>
     </plugins>
