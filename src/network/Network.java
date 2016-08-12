@@ -37,29 +37,31 @@ import java.util.Map;
  */
 public class Network {
 //    Map<Integer,Link> links;
-//    Map<Integer,Node> nodesByID;
+    private Map<Integer,Node> nodesByID;
 
     private Map<String, Node> nodesByDescription;
     private int nrLinks = 0;
     private Map<MotifLink, Set<Node>> nodeSetsDepartingFromLink;
     private Map<MotifLink, ArrayList<Node>> nodesWithLink;
-    
+    private int nNodes;
     
     
     /**
      * Creates a new network without edges or nodes
      */
     public Network() {
-//        nodesByID=new HashMap<Integer,Node>();
+        nodesByID=new HashMap<Integer,Node>();
         nodesByDescription = new HashMap<String, Node>();
 //        links=new HashMap<Integer,Link>();
         nodeSetsDepartingFromLink = new HashMap<MotifLink, Set<Node>>();
+        nNodes=0;
 
     }
 
     public void addNode(Node n) {
-//        nodesByID.put(n.getID(), n);
+        nodesByID.put(n.getID(), n);
         nodesByDescription.put(n.getDescription(), n);
+        nNodes++;
     }
 
     public Node getNodeByDescription(String s) {
@@ -71,6 +73,10 @@ public class Network {
     public Map<String, Node> getNodesByDescription() {
 		return nodesByDescription;
 	}
+    
+    public Node getNodeByID(int id){
+    	return nodesByID.get(id);
+    }
 
 	/**
      * Adds a link to the network and updates the sets of nodes with edges of
@@ -215,4 +221,8 @@ public class Network {
         System.out.println("Links: " + network.nrLinks);
         return network;
     }
+
+	public int getnNodes() {
+		return nNodes;
+	}
 }
