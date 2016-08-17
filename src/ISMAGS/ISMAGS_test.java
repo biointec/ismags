@@ -34,10 +34,10 @@ public class ISMAGS_test {
 
 //        String motif = "PPPPPPPPPP";
 //        String motif = "XXX";
-        String motif = "iiiiii";
+        String motif = "YYY";
 //        String linkfiles = "\"P u P P example.in\"";
-//        String linkfiles="\"X u A A Xu.txt Y u B B Yu.txt Z d A B Zd.txt\"";
-        		String linkfiles ="\"I u I I randomgraph2.txt\"";
+        String linkfiles="\"X u A A Xu.txt Y u B B Yu.txt Z d A B Zd.txt\"";
+//        		String linkfiles ="\"I u I I randomgraph2.txt\"";
 
 //        String motif = "GGG";
 //        String motif = "SSS";

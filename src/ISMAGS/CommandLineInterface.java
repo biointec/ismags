@@ -105,7 +105,7 @@ public class CommandLineInterface {
             }
             MotifFinder mf = new MotifFinder(network);
             long tijd = System.nanoTime();
-            Set<MotifInstance> motifs = mf.findMotif(motif);
+            Set<MotifInstance> motifs = mf.findMotif(motif,false);
             tijd=System.nanoTime()-tijd;
             if (print) {
                 System.out.println("Completed search in "+ tijd/1000000+ " milliseconds");

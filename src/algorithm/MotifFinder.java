@@ -20,6 +20,7 @@
 package algorithm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -56,19 +57,22 @@ public class MotifFinder {
 	/**
 	 * Finds and returns all instances of specified motif in the network
 	 *
-	 * @param motif Motif of which instances need to be found
+	 * @param motif
+	 *            Motif of which instances need to be found
 	 * 
 	 * @return All occurrences of the motif in the network
 	 */
 	public Set<MotifInstance> findMotif(Motif motif) {
 		return this.findMotif(motif, false);
 	}
-	
+
 	/**
 	 * Finds and returns all instances of specified motif in the network
 	 *
-	 * @param motif Motif of which instances need to be found
-	 * @param saveLinks if true: keep a set of links used in the result set
+	 * @param motif
+	 *            Motif of which instances need to be found
+	 * @param saveLinks
+	 *            if true: keep a set of links used in the result set
 	 * 
 	 * @return All occurrences of the motif in the network
 	 */
@@ -118,33 +122,9 @@ public class MotifFinder {
 		Node[] mappedNodes = new Node[nrMotifNodes];
 		// Initialise symmetry handler to analyse motif
 		symmetryHandler = new SymmetryHandler(mapping, motif, mappedNodes);
-		// Set<List<Node>> edges = new HashSet<List<Node>>();
-		// Set<Node> nodes = new HashSet<Node>();
-		// boolean[][]edges = new boolean[network.getnNodes()][];
-		// for(int i=0;i<edges.length;i++){
-		// edges[i]=new boolean[i];
-		// }
-		// boolean[] nodes = new boolean[network.getnNodes()];
 		if (saveLinks)
 			usedLinks = new HashSet<Set<Node>>();
 		mapNext(motif, instances, bestMN, mappedNodes, 0, saveLinks);
-		// usedNodes = new ArrayList<Node>();
-		// usedEdges = new ArrayList<List<Node>>();
-		// for(int i=0;i<nodes.length;i++){
-		// if(nodes[i]){
-		// usedNodes.add(network.getNodeByID(i));
-		// }
-		// for(int j=0;j<i;j++){
-		// if(edges[i][j]){
-		// List<Node> edge = new ArrayList<>(2);
-		// edge.add(network.getNodeByID(j));
-		// edge.add(network.getNodeByID(i));
-		// usedEdges.add(edge);
-		// }
-		// }
-		// }
-		// System.out.println(usedEdges);
-		// System.out.println(usedNodes);
 		return instances;
 	}
 
@@ -177,14 +157,16 @@ public class MotifFinder {
 					if (mappedNodes[i] == null)
 						continue;
 					int[] links = motif.getConnectionsOfMotifNode(i);
-					for (int j = 0; j < links.length && links[j] < i; j++) {
-						if (mappedNodes[j] == null)
+					// System.out.println(Arrays.toString(links));
+					for (int j = 0; j < links.length; j++) {
+						if (mappedNodes[links[j]] == null)
 							continue;
+						 else if( links[j]>i) break;
 						HashSet<Node> link = new HashSet<Node>(2);
 						link.add(mappedNodes[i]);
-						link.add(mappedNodes[j]);
+						link.add(mappedNodes[links[j]]);
 						usedLinks.add(link);
-						
+
 					}
 				}
 			}
@@ -193,11 +175,11 @@ public class MotifFinder {
 				instances.add(new MotifInstance(mappedNodes));
 				if (saveLinks) {
 					int[] links = motif.getConnectionsOfMotifNode(motifNode);
-					for (int j = 0; j < links.length && links[j] < motifNode; j++) {
+					for (int j = 0; j < links.length; j++) {
 						HashSet<Node> link = new HashSet<Node>(2);
-						link.add(mappedNodes[j]);
+						link.add(mappedNodes[links[j]]);
 						link.add(node);
-						usedLinks.add(link);					
+						usedLinks.add(link);
 					}
 				}
 			}
