@@ -19,17 +19,16 @@
  */
 package algorithm;
 
-import datastructures.NodeIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import datastructures.NodeIterator;
 import motifs.Motif;
 import motifs.MotifInstance;
 import motifs.MotifLink;
-import network.Link;
 import network.Network;
 import network.Node;
 
@@ -57,8 +56,20 @@ public class MotifFinder {
 	/**
 	 * Finds and returns all instances of specified motif in the network
 	 *
-	 * @param motif
-	 *            Motif of which instances need to be found
+	 * @param motif Motif of which instances need to be found
+	 * 
+	 * @return All occurrences of the motif in the network
+	 */
+	public Set<MotifInstance> findMotif(Motif motif) {
+		return this.findMotif(motif, false);
+	}
+	
+	/**
+	 * Finds and returns all instances of specified motif in the network
+	 *
+	 * @param motif Motif of which instances need to be found
+	 * @param saveLinks if true: keep a set of links used in the result set
+	 * 
 	 * @return All occurrences of the motif in the network
 	 */
 	public Set<MotifInstance> findMotif(Motif motif, boolean saveLinks) {
