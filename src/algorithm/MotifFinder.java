@@ -41,7 +41,7 @@ public class MotifFinder {
 	private SymmetryHandler symmetryHandler;
 	private Set<Integer> unmappedNodes;
 	// private List<Node> usedNodes;
-	private Set<List<Node>> usedLinks;
+	private Set<Set<Node>> usedLinks;
 
 	/**
 	 * Default constructor for MotifFinder
@@ -126,7 +126,7 @@ public class MotifFinder {
 		// }
 		// boolean[] nodes = new boolean[network.getnNodes()];
 		if (saveLinks)
-			usedLinks = new HashSet<List<Node>>();
+			usedLinks = new HashSet<Set<Node>>();
 		mapNext(motif, instances, bestMN, mappedNodes, 0, saveLinks);
 		// usedNodes = new ArrayList<Node>();
 		// usedEdges = new ArrayList<List<Node>>();
@@ -176,27 +176,15 @@ public class MotifFinder {
 				for (int i = 0; i < motif.getNrMotifNodes(); i++) {
 					if (mappedNodes[i] == null)
 						continue;
-					// usedNodes[mappedNodes[i].getID()]=true;
-					// usedNodes.add(mappedNodes[i]);
 					int[] links = motif.getConnectionsOfMotifNode(i);
 					for (int j = 0; j < links.length && links[j] < i; j++) {
 						if (mappedNodes[j] == null)
 							continue;
-						List<Node> link = new ArrayList<Node>(2);
-						if (mappedNodes[i].getID() > mappedNodes[j].getID()) {
-							link.add(mappedNodes[j]);
-							link.add(mappedNodes[i]);
-						} else {
-							link.add(mappedNodes[i]);
-							link.add(mappedNodes[j]);
-						}
+						HashSet<Node> link = new HashSet<Node>(2);
+						link.add(mappedNodes[i]);
+						link.add(mappedNodes[j]);
 						usedLinks.add(link);
-						// if (mappedNodes[i].getID() > mappedNodes[j].getID())
-						// {
-						// usedLinks[mappedNodes[i].getID()][mappedNodes[j].getID()]=true;
-						// } else {
-						// usedLinks[mappedNodes[j].getID()][mappedNodes[i].getID()]=true;
-						// }
+						
 					}
 				}
 			}
@@ -205,22 +193,11 @@ public class MotifFinder {
 				instances.add(new MotifInstance(mappedNodes));
 				if (saveLinks) {
 					int[] links = motif.getConnectionsOfMotifNode(motifNode);
-					// usedNodes[node.getID()]=true;
 					for (int j = 0; j < links.length && links[j] < motifNode; j++) {
-						List<Node> link = new ArrayList<Node>(2);
-						if (node.getID() > mappedNodes[j].getID()) {
-							link.add(mappedNodes[j]);
-							link.add(node);
-						} else {
-							link.add(node);
-							link.add(mappedNodes[j]);
-						}
-						usedLinks.add(link);
-						// if (node.getID() > mappedNodes[j].getID()) {
-						// usedLinks[node.getID()][mappedNodes[j].getID()]=true;
-						// } else {
-						// usedLinks[mappedNodes[j].getID()][node.getID()]=true;
-						// }
+						HashSet<Node> link = new HashSet<Node>(2);
+						link.add(mappedNodes[j]);
+						link.add(node);
+						usedLinks.add(link);					
 					}
 				}
 			}
@@ -259,7 +236,7 @@ public class MotifFinder {
 		}
 	}
 
-	public Set<List<Node>> getUsedLinks() {
+	public Set<Set<Node>> getUsedLinks() {
 		return usedLinks;
 	}
 }
