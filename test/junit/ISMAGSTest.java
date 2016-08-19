@@ -1,14 +1,18 @@
 package junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import ISMAGS.CommandLineInterface;
 import algorithm.MotifFinder;
@@ -104,13 +108,76 @@ public class ISMAGSTest {
 	
 	/**
 	 * Checks if the list of edges stored in {@link MotifFinder.usedLinks} are
-	 * the same edges as implied by the instances from
+	 * the same edges as used by the instances from
 	 * {@link MotifFinder.findMotif()}
 	 */
 	@Test
 	public void testResultSet() {
 		Set<Set<Node>> usedLinks = mf.getUsedLinks();
-		assertTrue(usedLinks.size() > 0);
+		assertTrue("usedLinks should be stored", 
+				usedLinks !=null && usedLinks.size() > 0);
+		System.out.println("Used links: "+usedLinks.size());
+		
+		Set<Set<Node>> resultLinks = this.findResultSet();
+		
+		assertEquals("links found in the motifs should be the same as stored in usedLinks", 
+				resultLinks, usedLinks);
+		
 	}
+	
+	
+	
+	/**
+	 * Access point for recursively going over nodes and edges of a {@link MotifInstance} 
+	 * 
+	 * @param motif the {@link Motif}, used to know the structure of the {@link MotifInstance}
+	 * @param nodeArray array of {@link Node}s in a {@link MotifInstance}
+	 * @param resultConnections {@link Set} of found edges
+	 */
+	private void iterateMotifInstance(Motif motif, Node[] nodeArray, HashSet<Set<Node>> resultConnections){
+		ArrayList<Integer> visited = new ArrayList<Integer>(nodeArray.length);
+		registerNodeAndNeighbors(0, motif, nodeArray, resultConnections, visited);
+	}
+	
+	/**
+	 * Recursively visiting a node of a {@link MotifInstance} and its neighbors 
+	 * 
+	 * @param nodeNr position of the {@link Node} in the node array
+	 * @param motif the {@link Motif}, used to know the structure of the {@link MotifInstance}
+	 * @param nodeArray array of {@link Node}s in a {@link MotifInstance}
+	 * @param resultConnections {@link Set} of found edges
+	 * @param visited list of nodes already visited in this {@link MotifInstance} iteration
+	 */
+	private void registerNodeAndNeighbors(int nodeNr, Motif motif, Node[] nodeArray, HashSet<Set<Node>> resultConnections, ArrayList<Integer> visited){
+		visited.add(nodeNr);
+		Node node = nodeArray[nodeNr];
+		
+		for (int j : motif.getConnectionsOfMotifNode(nodeNr)){
+			HashSet<Node> nodePair = new HashSet<Node>();
+			Node toNode = nodeArray[j];
+			nodePair.add(node);
+			nodePair.add(toNode);
+			resultConnections.add(nodePair);
+			if (!visited.contains(j)){
+				registerNodeAndNeighbors(j, motif, nodeArray, resultConnections, visited);
+			}
+		}
+	}
+	
+	/**
+	 * Iterate the {@link MotifInstance}s from a run and list all edges as node sets.
+	 * 
+	 * @return a Set of node pairs
+	 */
+	private Set<Set<Node>> findResultSet(){
+		HashSet<Set<Node>> resultConnections = new HashSet<Set<Node>>();
+				
+		for (MotifInstance mi : motifInstances){
+			Node[] nodeArray = mi.getNodeArray();
+			iterateMotifInstance(motif, nodeArray, resultConnections);
+		}
+		return resultConnections;
+	}
+
 
 }
