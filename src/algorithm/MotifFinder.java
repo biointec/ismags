@@ -20,10 +20,8 @@
 package algorithm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import datastructures.NodeIterator;
@@ -144,10 +142,6 @@ public class MotifFinder {
 	 */
 	private void mapNext(Motif motif, Set<MotifInstance> instances, int motifNode, Node[] mappedNodes, int nrMapped,
 			boolean saveLinks) {
-		// Set<List<Node>> usedLinks) {
-		// boolean[][] usedLinks,boolean[]usedNodes) {
-		// get set of possible nodes to map on motifNode
-		// NodeSet nodes = symmetryHandler.mapping[motifNode].getNodeSet();
 		ArrayList<Node> nodes = symmetryHandler.mapping[motifNode].getNodeSet();
 		// if the current node mapping will complete the mapping, export the
 		// instances
