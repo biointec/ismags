@@ -20,14 +20,16 @@
 package algorithm;
 
 import datastructures.NodeIterator;
-
+import datastructures.SymProp;
 import java.util.ArrayList;
-//import datastructures.SymProp;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+//import datastructures.NodeSet;
 import datastructures.PriorityObject;
 import datastructures.PriorityQueueMap;
+import datastructures.SymGraph;
+import java.util.List;
 import java.util.Map;
 import motifs.Motif;
 import motifs.MotifLink;
@@ -39,12 +41,14 @@ import network.Node;
  */
 class SymmetryHandler {
 
+    int nrOrbits = 0;
+    int[] orbits;
     Set<Integer> mappedPositions;
-    private Map<Integer, Set<Integer>> smaller;
-    private Map<Integer, Set<Integer>> larger;
+    Map<Integer, Set<Integer>> smaller;
+    Map<Integer, Set<Integer>> larger;
     NodeIterator[] mapping;
-    private Node[] mappedNodes;
-    private PriorityQueueMap PQmap;
+    Node[] mappedNodes;
+    PriorityQueueMap PQmap;
     private Motif motif;
 
     /**
@@ -63,7 +67,7 @@ class SymmetryHandler {
         this.mappedNodes = mappedNodes;
         smaller = new HashMap<Integer, Set<Integer>>();
         larger = new HashMap<Integer, Set<Integer>>();
-//        SymProp sp = analyseMotif(motif);
+        SymProp sp = analyseMotif(motif);
     }
 
     /**
@@ -80,24 +84,27 @@ class SymmetryHandler {
         NodeIterator r = mapping[motifNodeID];
         //determine lower bound for graph node candidates
         Set<Integer> minset = larger.get(motifNodeID);
-        Node minNode = new Node(-1,"");
-//        Node minNode=null;
+        Node minNode = null;
+        int min = Integer.MIN_VALUE;
         if (minset != null) {
             for (Integer integer : minset) {
-                if (mappedPositions.contains(integer) && minNode.compareTo(mappedNodes[integer])<0) {
+                if (mappedPositions.contains(integer) && min < mappedNodes[integer].getID()) {
+                    min = mappedNodes[integer].getID();
                     minNode = mappedNodes[integer];
                 }
             }
         }
         //determine upper bound for graph node candidates
         Set<Integer> maxset = smaller.get(motifNodeID);
-        Node maxNode = new Node(Integer.MAX_VALUE,"");
+        Node maxNode = null;
+        int max = Integer.MAX_VALUE;
         if (maxset != null) {
             for (Integer integer : maxset) {
-                if (mappedPositions.contains(integer) && maxNode.compareTo(mappedNodes[integer])>0) {
+                if (mappedPositions.contains(integer) && max > mappedNodes[integer].getID()) {
+                    max = mappedNodes[integer].getID();
                     maxNode = mappedNodes[integer];
                     //abort when bounds conflict
-                    if (minNode.compareTo(maxNode)>0) {
+                    if (min > max) {
                         return null;
                     }
                 }
@@ -126,7 +133,7 @@ class SymmetryHandler {
                 continue;
             }
             MotifLink motifLink = restrictions[j];
-//            NodeSet ln = n.neighboursPerType[motifLink.getMotifLinkID()];
+//            NodeSet ln = n.neighboursPerType[motifLink.motifLinkID];
             ArrayList<Node> ln = n.neighboursPerType.get(motifLink.getMotifLinkID());
             if (ln == null) {
                 return false;
@@ -154,5 +161,161 @@ class SymmetryHandler {
         }
     }
 
-    
+    /**
+     * Updates the orbit partitioning by merging the orbit partition cells of
+     * the specified motif nodes
+     *
+     * @param a first cell to be merged
+     * @param b second cell to be merged
+     * @param orbits current orbit partition
+     */
+    private void mergeOrbits(int a, int b, int[] orbits) {
+        int orbita = orbits[a];
+        int orbitb = orbits[b];
+        if (orbitb == -1 && orbita == -1) {
+            orbits[a] = ++nrOrbits;
+            orbits[b] = nrOrbits;
+        } else if (orbitb == -1) {
+            orbits[b] = orbita;
+        } else if (orbita == -1) {
+            orbits[a] = orbitb;
+        } else {
+            for (int i = 0; i < orbits.length; i++) {
+                if (orbits[i] == orbita) {
+                    orbits[i] = orbitb;
+                }
+            }
+        }
+    }
+
+    /**
+     * Initialises and returns full motif analysis
+     *
+     * @param motif motif to be analysed
+     * @return
+     */
+    private SymProp analyseMotif(Motif motif) {
+        int nrMotifNodes = motif.getNrMotifNodes();
+        SymGraph sym = new SymGraph(motif);
+        SymProp sp = new SymProp(nrMotifNodes, smaller, larger);
+        orbits = new int[nrMotifNodes];
+        for (int i = 0; i < orbits.length; i++) {
+            orbits[i] = -1;
+        }
+        mapNodes(sp, orbits, sym, true);
+        return sp;
+    }
+
+    /**
+     * Recursive motif analysis
+     *
+     * @param symmetricProperties stores all permutations and symmetry-breaking
+     * constraints for the motif
+     * @param orbits orbit partitioning of the motif nodes
+     * @param symGraph current state in motif analysis
+     * @param main true if all previously coupled motif nodes are coupled to
+     * themselves
+     */
+    private void mapNodes(SymProp symmetricProperties, int[] orbits, SymGraph symGraph, boolean main) {
+        boolean allone = true;
+        int splitcolor = -1;
+        int lowestUnassignedMotifNode = Integer.MAX_VALUE;
+        //determining next motif node to map
+        outfor:
+        for (int i = 0; i < symGraph.colorToTopMotifnode.size(); i++) {
+            List<Integer> listi = symGraph.colorToTopMotifnode.get(i);
+            int sizei = listi.size();
+            if (sizei != 1) {
+                allone = false;
+                for (Integer motifNodeID : listi) {
+                    if (motifNodeID < lowestUnassignedMotifNode) {
+                        splitcolor = i;
+                        lowestUnassignedMotifNode = motifNodeID;
+                        continue outfor;
+                    }
+                }
+            }
+        }
+        //if all nodes are mapped, export permutation
+        if (allone) {
+            int[] perm = new int[symGraph.motif.getNrMotifNodes()];
+            for (int j = 0; j < perm.length; j++) {
+                int bottomcolor = symGraph.colorToBottomMotifnode.get(j).get(0);
+                int topcolor = symGraph.colorToTopMotifnode.get(j).get(0);
+                perm[topcolor] = bottomcolor;
+                mergeOrbits(bottomcolor, topcolor, orbits);
+            }
+            symmetricProperties.addPermutation(perm);
+            return;
+        }
+        //map lowest uncoupled node in the upper partition on all motif nodes in the lower partition
+        List<Integer> topsplit = symGraph.colorToTopMotifnode.get(splitcolor);
+        int top = lowestUnassignedMotifNode;
+        List<Integer> bottomsplit = symGraph.colorToBottomMotifnode.get(splitcolor);
+        SymGraph newSymGraph = symGraph;
+        //deal with the initial OPP and the cases for which the OPP has identical subsets
+        if (topsplit.size() != symGraph.motif.getNrMotifNodes() && topsplit.containsAll(bottomsplit)) {
+            int[] perm = new int[symGraph.motif.getNrMotifNodes()];
+            boolean identityPermutation = true;
+            for (int k = 0; k < newSymGraph.colorToBottomMotifnode.size(); k++) {
+                List<Integer> bottomnodes = newSymGraph.colorToBottomMotifnode.get(k);
+                List<Integer> topnodes = newSymGraph.colorToTopMotifnode.get(k);
+                int bottomnode = bottomnodes.get(0);
+                int topnode = topnodes.get(0);
+                if (bottomnode != topnode) {
+                    mergeOrbits(bottomnode, topnode, orbits);
+                }
+            }
+            int j = 0;
+
+            start:
+            for (; j < newSymGraph.colorToBottomMotifnode.size(); j++) {
+                List<Integer> bottomnodes = newSymGraph.colorToBottomMotifnode.get(j);
+                List<Integer> topnodes = newSymGraph.colorToTopMotifnode.get(j);
+                if (bottomnodes.size() > 1) {
+                    int b = bottomnodes.get(0);
+                    int t = topnodes.get(0);
+                    newSymGraph = newSymGraph.map(t, b, j);
+                    if (newSymGraph.colorToBottomMotifnode.size() != symGraph.motif.getNrMotifNodes()) {
+                        j = -1;
+                        continue start;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            for (j = 0; j < newSymGraph.colorToBottomMotifnode.size(); j++) {
+                List<Integer> bottomnodes = newSymGraph.colorToBottomMotifnode.get(j);
+                List<Integer> topnodes = newSymGraph.colorToTopMotifnode.get(j);
+                int bottomnode = bottomnodes.get(0);
+                int topnode = topnodes.get(0);
+                perm[topnode] = bottomnode;
+                if (bottomnode != topnode) {
+                    identityPermutation = false;
+                }
+            }
+
+            if (!identityPermutation) {
+                symmetricProperties.addPermutation(perm);
+                return;
+            }
+        }
+        //iterate over all possible couplings
+        for (int j = 0; j < bottomsplit.size(); j++) {
+            int m = bottomsplit.get(j);
+            if (orbits[top] != -1 && orbits[top] == orbits[m]) {
+                continue;
+            }
+            SymGraph symm = symGraph.map(top, m, splitcolor);
+            //keep track of couplings and if the first are coupled to themselves
+            boolean nm = main && (m == top);
+            if (symm != null) {
+                mapNodes(symmetricProperties, orbits, symm, nm);
+            }
+        }
+        //export partial orbit cells as symmetry-breaking constraints
+        if (main) {
+            symmetricProperties.fix(top, orbits);
+        }
+    }
 }

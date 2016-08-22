@@ -32,12 +32,12 @@ public class ISMAGS_test {
         String foldername = "networks/";
         String output = "...";
 
-//        String motif = "PPPPPPPPPP";
+        String motif = "i";
 //        String motif = "XXX";
-        String motif = "YYY";
+//        String motif = "YYY";
 //        String linkfiles = "\"P u P P example.in\"";
-        String linkfiles="\"X u A A Xu.txt Y u B B Yu.txt Z d A B Zd.txt\"";
-//        		String linkfiles ="\"I u I I randomgraph2.txt\"";
+//        String linkfiles="\"X u A A Xu.txt Y u B B Yu.txt Z d A B Zd.txt\"";
+        		String linkfiles ="\"I u I I randomgraph-100-1000.txt\"";
 
 //        String motif = "GGG";
 //        String motif = "SSS";
