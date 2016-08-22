@@ -27,7 +27,7 @@ public class ISMAGSTest {
 	final String motifspec = "XXXZ000Z0Y00ZYY";
 	final String dataFolder = "./networks/";
 	
-	final int expectedNumberOfInstances = 28362;
+	final int expectedNumberOfInstances = 4727;
 
 	
 	/**
