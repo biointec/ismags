@@ -41,6 +41,7 @@ public class MotifFinder {
 	private Set<Integer> unmappedNodes;
 	// private List<Node> usedNodes;
 	private Set<Set<Node>> usedLinks;
+	private boolean cancelled = false;
 
 	/**
 	 * Default constructor for MotifFinder
@@ -183,7 +184,7 @@ public class MotifFinder {
 			Iterator<Node> nodeIterator = nodes.iterator();
 			symmetryHandler.mappedPositions.add(motifNode);
 			unmappedNodes.remove(motifNode);
-			while (nodeIterator.hasNext()) {
+			while (!cancelled && nodeIterator.hasNext()) {
 				Node n = nodeIterator.next();
 				mappedNodes[motifNode] = n;
 				n.used = true;
@@ -193,7 +194,7 @@ public class MotifFinder {
 				if (succesMapping) {
 					// determine next node to be mapped
 					NodeIterator nextIterator = symmetryHandler.getNextBestIterator(unmappedNodes);
-					if (nextIterator != null) {// && nextIterator.nodes.size() >
+					if (!cancelled && nextIterator != null) {// && nextIterator.nodes.size() >
 												// 0) {
 						symmetryHandler.mapping[nextIterator.getMotifNodeID()] = nextIterator;
 						// recursively call mapNext
@@ -214,5 +215,12 @@ public class MotifFinder {
 
 	public Set<Set<Node>> getUsedLinks() {
 		return usedLinks;
+	}
+	
+	/**
+	 * Interrupt the algorithm from another thread.
+	 */
+	public void cancel(){
+		this.cancelled = true;
 	}
 }
