@@ -20,11 +20,9 @@
 package datastructures;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import network.Node;
 
 /**
@@ -246,8 +244,10 @@ public class NodeIterator {
                 }
                 j = ((j) % (size - 1)) + 1;
             }
-            return ret;
         }
+        return initialLists.stream().flatMap(Collection::stream).
+                distinct()
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
 	public NodeIterator getParent() {
