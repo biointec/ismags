@@ -30,14 +30,22 @@ public class ISMAGS_test {
 
     public static void main(String[] args) throws IOException {
         String foldername = "networks/";
-        String output = "...";
+        String output = "test_3";
 
-        String motif = "i";
+//        String motif = "AB0C00";
+        String motif = "AC0B00";
+        String linkfiles = "\"B u t t link_motif4_graph3_B.txt C u t t link_motif4_graph3_C.txt A u t t link_motif4_graph3_A.txt\"";
+        System.out.println(linkfiles);
+
+//        String motif = "i";
 //        String motif = "XXX";
-//        String motif = "YYY";
+//        String motif = "ZYY";
 //        String linkfiles = "\"P u P P example.in\"";
 //        String linkfiles="\"X u A A Xu.txt Y u B B Yu.txt Z d A B Zd.txt\"";
-        		String linkfiles ="\"I u I I randomgraph-100-1000.txt\"";
+//        		String linkfiles ="\"I u P I randomgraph-100-1000.txt\"";
+
+//        String motif = "AA0A00";
+//        String linkfiles="\"A u P I tA.txt\"";
 
 //        String motif = "GGG";
 //        String motif = "SSS";
@@ -53,7 +61,7 @@ public class ISMAGS_test {
 //        String motif = "P0P";
 //        String motif = "P0P00P";
 //        String motif = "P0P00P000P";
-//        String linkfiles = "\"G u t t Gu.txt P u t t Pu.txt S d t t Sd.txt\"";
+//        String linkfiles = "\"G d t t Gu.txt P d t t Pu.txt S d t t Sd.txt\"";
 
 //        String motif = "PPP";//3
 //        String motif = "PPPPPP";//4
